@@ -45,14 +45,11 @@ public class Main {
                     }
                     break;
                 case "add":
-                    if (args.length >= 2) {
-                        System.err.println("Usage: java ... Main <name> <description>");
-                        break;
 
-                    }
                     HashMap<String, Object> new_taks = new HashMap<>();
                     new_taks.put("discription", String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
                     new_taks.put("id", String.valueOf(list.size()));
+                    new_taks.put("marked", "todo");
                     list.add(new_taks);
 
                     write(mapper, target.toFile(), list);
@@ -95,27 +92,34 @@ public class Main {
                         System.err.println("Usage: java ... Main <name> <description>");
                     }
                     boolean has_filter = false;
-                    if (args.length == 2 && Arrays.toString(commands).contains(args[1])) {
+                    if (args.length > 1 && Arrays.toString(commands).contains(args[1])) {
 
                         has_filter = true;
 
-                    } else {
+                    } else if (args.length > 1 && !Arrays.toString(commands).contains(args[2])) {
                         System.err.println("Usage: java ... Main <name> <description>");
                         break;
                     }
                     for (Map<String, Object> task : list) {
                         String result;
                         if (has_filter) {
+                            try {
+                                result = task.get("marked").equals(args[1]) ? task.get("discription") + " " + task.get("marked").toString() : "\b";
 
-                        }
+                            } catch (Exception e) {
+                                result = task.get("discription").toString();
+                            }
+                        } else {
+                            try {
+                                result = task.get("discription") + " " + task.get("marked").toString();
 
-                        try {
-                            result = task.get("discription") + " " + task.get("marked").toString();
+                            } catch (Exception e) {
+                                result = task.get("discription").toString();
+                            }
 
-                        } catch (Exception e) {
-                            result = task.get("discription").toString();
                         }
                         System.out.println(result);
+
                     }
 
                     break;
