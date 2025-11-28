@@ -7,10 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Main {
     static void write(ObjectMapper mapper, File target, List<Map<String, Object>> list) {
@@ -20,9 +17,9 @@ public class Main {
 
     }
 
-    static void main(String[] args) {
-        String[] commands = {"add", "update", "list", "delete", "--help", "mark <tag>", "tags: done, in-progress, todo"};
-        if (!Arrays.toString(commands).contains(args[0])) {
+    public final Set<String> COMMANDS = Set.of("add","delete-all", "update", "list", "delete", "--help", "mark", "mark <tags>", "tags:","done", "in-progress", "todo");
+     void main(String[] args) {
+        if (!COMMANDS.contains(args[0])) {
             System.err.println("Usage: java ... Main <name> <description>");
             return;
         }
@@ -40,7 +37,7 @@ public class Main {
 
             switch (args[0]) {
                 case "--help":
-                    for (String command : commands) {
+                    for (String command : COMMANDS) {
                         System.out.println(command);
                     }
                     break;
@@ -48,7 +45,8 @@ public class Main {
 
                     HashMap<String, Object> new_taks = new HashMap<>();
                     new_taks.put("discription", String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
-                    new_taks.put("id", String.valueOf(list.size()));
+                    int last_od = list.isEmpty()  ? 0: Integer.parseInt(list.getLast().get("id").toString()) ;
+                    new_taks.put("id", String.valueOf(last_od+1));
                     new_taks.put("marked", "todo");
                     list.add(new_taks);
 
@@ -83,27 +81,28 @@ public class Main {
 
 
                 case "mark":
-                    if (args.length < 3 || !Arrays.toString(args).contains(args[2])) {
-                        System.err.println("Usage: java ... Main <name> <description>");
+                    if (args.length < 3 || !COMMANDS.contains(args[2])) {
+                        System.err.println("Ussssage: java ... Main <name> <description>");
                         break;
                     }
-                    if (Integer.parseInt(list.getLast().get("id").toString()) < Integer.parseInt(args[1])) {
-                        System.err.println("Usage: java ... Main <name> <description>");
-                        break;
+                    for (int i = 0; i < list.size();i++) {
+                        if (list.get(i).get("id").toString().equals(args[1])) {
+                            list.get(i).replace("marked", args[2]);
+                            write(mapper, target.toFile(), list);
+                            break;
+                        }
                     }
-                    list.get(Integer.parseInt(args[1])).put("marked", args[2]);
-                    write(mapper, target.toFile(), list);
                     break;
                 case "list":
                     if (args.length > 2) {
                         System.err.println("Usage: java ... Main <name> <description>");
                     }
                     boolean has_filter = false;
-                    if (args.length > 1 && Arrays.toString(commands).contains(args[1])) {
+                    if (args.length > 1 && COMMANDS.contains(args[1])) {
 
                         has_filter = true;
 
-                    } else if (args.length > 1 && !Arrays.toString(commands).contains(args[2])) {
+                    } else if (args.length > 1 && !COMMANDS.contains(args[2])) {
                         System.err.println("Usage: java ... Main <name> <description>");
                         break;
                     }
@@ -135,8 +134,19 @@ public class Main {
                         System.err.println("Usage: java ... Main <name> <description>");
                     }
 
-                    list.remove(Integer.parseInt(args[1]));
+                    for (int i = 0; i < list.size();i++) {
+                        if (list.get(i).get("id").toString().equals(args[1])) {
+                            list.remove(i);
+                            write(mapper, target.toFile(), list);
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case "delete-all":{
+                  list.clear();
                     write(mapper, target.toFile(), list);
+                    break;
                 }
 
                 default:
