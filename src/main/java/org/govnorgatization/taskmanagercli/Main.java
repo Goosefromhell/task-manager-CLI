@@ -99,7 +99,6 @@ public class Main {
 
                         has_filter = true;
 
-
                     } else {
                         System.err.println("Usage: java ... Main <name> <description>");
                         break;
