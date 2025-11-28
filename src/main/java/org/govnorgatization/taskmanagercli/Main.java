@@ -45,9 +45,9 @@ public class Main {
                     }
                     break;
                 case "add":
-                    if (args.length >= 2 ) {
+                    if (args.length >= 2) {
                         System.err.println("Usage: java ... Main <name> <description>");
-                       break;
+                        break;
 
                     }
                     HashMap<String, Object> new_taks = new HashMap<>();
@@ -60,8 +60,7 @@ public class Main {
                 case "update":
                     try {
                         Integer.parseInt(args[1]);
-                    }
-                    catch (NumberFormatException e) {
+                    } catch (NumberFormatException e) {
                         System.err.println("Usage: java ... Main <name> <description>");
                         break;
 
@@ -76,7 +75,7 @@ public class Main {
                     }
 
 
-                    list.get(Integer.parseInt(args[1])).replace("discription",Arrays.copyOfRange(args, Integer.parseInt(args[2]),args.length-1));
+                    list.get(Integer.parseInt(args[1])).replace("discription", Arrays.copyOfRange(args, Integer.parseInt(args[2]), args.length - 1));
 
 
                 case "mark":
@@ -92,16 +91,30 @@ public class Main {
                     write(mapper, target.toFile(), list);
                     break;
                 case "list":
-                    if  (args.length > 1 ) {
+                    if (args.length > 2) {
                         System.err.println("Usage: java ... Main <name> <description>");
+                    }
+                    boolean has_filter = false;
+                    if (args.length == 2 && Arrays.toString(commands).contains(args[1])) {
+
+                        has_filter = true;
+
+
+                    } else {
+                        System.err.println("Usage: java ... Main <name> <description>");
+                        break;
                     }
                     for (Map<String, Object> task : list) {
                         String result;
-                        try {
-                            result = task.get("discription") + " "+ task.get("marked").toString()  ;
+                        if (has_filter) {
 
                         }
-                        catch (Exception e) {
+
+
+                        try {
+                            result = task.get("discription") + " " + task.get("marked").toString();
+
+                        } catch (Exception e) {
                             result = task.get("discription").toString();
                         }
                         System.out.println(result);
@@ -119,7 +132,6 @@ public class Main {
             System.out.println(list.getLast());
 
 
-//            System.out.println( json.get("command"));
         } catch (IOException e) {
             System.err.println("Unable to write task file: " + e.getMessage());
         }
