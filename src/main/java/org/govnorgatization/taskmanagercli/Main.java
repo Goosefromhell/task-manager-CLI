@@ -71,8 +71,15 @@ public class Main {
                         break;
                     }
 
-
-                    list.get(Integer.parseInt(args[1])).replace("discription", Arrays.copyOfRange(args, Integer.parseInt(args[2]), args.length - 1));
+                    for (int i = 0; i < list.size();i++) {
+                        if (list.get(i).get("id").toString().equals(args[1])) {
+                            System.out.println(i);
+                            list.get(i).replace("discription", String.join(" ",Arrays.copyOfRange(args, 2, args.length)));
+                            write(mapper, target.toFile(), list);
+                            break;
+                        }
+                    }
+                    break;
 
 
                 case "mark":
@@ -123,6 +130,14 @@ public class Main {
                     }
 
                     break;
+                case "delete": {
+                    if (args.length != 2) {
+                        System.err.println("Usage: java ... Main <name> <description>");
+                    }
+
+                    list.remove(Integer.parseInt(args[1]));
+                    write(mapper, target.toFile(), list);
+                }
 
                 default:
                     System.err.println("Unknown command: " + args[0] + "write --help to get list of commands");
