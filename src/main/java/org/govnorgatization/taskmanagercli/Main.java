@@ -3,6 +3,7 @@ package org.govnorgatization.taskmanagercli;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,14 +13,18 @@ import java.util.List;
 import java.util.Map;
 
 public class Main {
+    static void write(ObjectMapper mapper, File target,List<Map<String, Object>> list){
+        mapper.writerWithDefaultPrettyPrinter()
+                .writeValue(target, list);
 
+
+    }
     static void main(String[] args) {
-        String[] commands = {"add", "update", "list", "delete","mark", "--done", "--inprogress", "--todo"};
+        String[] commands = {"add", "update", "list", "delete","--help","mark <tag>", "tags: done, in-progress, todo"};
         if (args.length < 2 && !Arrays.toString(commands).contains(args[0])) {
             System.err.println("Usage: java ... Main <name> <description>");
             return;
         }
-        TaskLoader taskLoader = new TaskLoader();
 
         Path target = Path.of(System.getProperty("user.home"),
                 "Buffers", "TaskManager", "test.json");
@@ -51,8 +56,7 @@ public class Main {
                     new_taks.put("id", String.valueOf(list.size()));
                     list.add(new_taks);
 
-                    mapper.writerWithDefaultPrettyPrinter()
-                            .writeValue(target.toFile(), list);
+                    write(mapper,target.toFile(),list);
                     break;
                 case "update":
                     break;
@@ -63,6 +67,16 @@ public class Main {
 
                     break;
                 case "mark":
+                    if (args.length < 3 || !Arrays.toString(args).contains(args[2])) {
+                        System.err.println("Usage: java ... Main <name> <description>");
+                        break;
+                    }
+                     if(Integer.parseInt(list.getLast().get("id").toString()) < Integer.parseInt(args[1])) {
+                       System.err.println("Usage: java ... Main <name> <description>");
+                       break;
+                    }
+                    list.get(Integer.parseInt(args[1])).put("marked", args[2]);
+                    write(mapper,target.toFile(),list);
                     break;
 
                 default:
@@ -81,7 +95,5 @@ public class Main {
         }
     }
 
-    public static class TaskLoader {
-        public String[] keks;
-    }
+
 }
