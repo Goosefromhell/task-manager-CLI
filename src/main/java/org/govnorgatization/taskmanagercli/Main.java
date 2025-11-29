@@ -157,7 +157,6 @@ public class Main {
             }
 
 
-            System.out.println(list.getLast());
 
 
         } catch (IOException e) {
