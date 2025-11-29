@@ -117,12 +117,7 @@ public class Main {
                                 result = task.get("discription").toString();
                             }
                         } else {
-                            try {
-                                result = task.get("discription") + " " + task.get("marked").toString();
-
-                            } catch (Exception e) {
-                                result = task.get("discription").toString();
-                            }
+                            result = task.get("id") + "." + " " +task.get("discription") + " " + task.get("marked").toString();
 
                         }
                         System.out.println(result);
@@ -155,8 +150,6 @@ public class Main {
                     break;
 
             }
-
-
 
 
         } catch (IOException e) {
