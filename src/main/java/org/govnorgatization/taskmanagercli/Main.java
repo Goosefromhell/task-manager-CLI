@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Main {
@@ -20,6 +22,8 @@ public class Main {
     }
 
     void main(String[] args) {
+        LocalDateTime dateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         if (!COMMANDS.contains(args[0])) {
             System.err.println("Usage: java ... Main <name> <description>");
             return;
@@ -45,10 +49,12 @@ public class Main {
                 case "add":
 
                     HashMap<String, Object> new_taks = new HashMap<>();
-                    new_taks.put("discription", String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
+                    new_taks.put("description", String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
                     int last_od = list.isEmpty() ? 0 : Integer.parseInt(list.getLast().get("id").toString());
                     new_taks.put("id", String.valueOf(last_od + 1));
                     new_taks.put("marked", "todo");
+                    new_taks.put("created", dateTime.format(formatter));
+                    new_taks.put("updated", "");
                     list.add(new_taks);
 
                     write(mapper, target.toFile(), list);
@@ -73,7 +79,8 @@ public class Main {
                     for (int i = 0; i < list.size(); i++) {
                         if (list.get(i).get("id").toString().equals(args[1])) {
                             System.out.println(i);
-                            list.get(i).replace("discription", String.join(" ", Arrays.copyOfRange(args, 2, args.length)));
+                            list.get(i).replace("description", String.join(" ", Arrays.copyOfRange(args, 2, args.length)));
+                            list.get(i).replace("updated",dateTime.format(formatter));
                             write(mapper, target.toFile(), list);
                             break;
                         }
@@ -111,13 +118,13 @@ public class Main {
                         String result;
                         if (has_filter) {
                             try {
-                                result = task.get("marked").equals(args[1]) ? task.get("discription") + " " + task.get("marked").toString() : "\b";
+                                result = task.get("marked").equals(args[1]) ? task.get("description") + " " + task.get("marked").toString() : "\b";
 
                             } catch (Exception e) {
-                                result = task.get("discription").toString();
+                                result = task.get("description").toString();
                             }
                         } else {
-                            result = task.get("id") + "." + " " +task.get("discription") + " " + task.get("marked").toString();
+                            result = task.get("id") + "." + " " +task.get("description") + " " + task.get("marked").toString()+" "+ "Created: "+task.get("created")+" Updated: "+task.get("updated");
 
                         }
                         System.out.println(result);
