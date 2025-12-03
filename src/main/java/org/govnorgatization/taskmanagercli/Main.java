@@ -48,14 +48,14 @@ public class Main {
                     break;
                 case "add":
 
-                    HashMap<String, Object> new_taks = new HashMap<>();
-                    new_taks.put("description", String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
+                    HashMap<String, Object> new_task = new HashMap<>();
+                    new_task.put("description", String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
                     int last_od = list.isEmpty() ? 0 : Integer.parseInt(list.getLast().get("id").toString());
-                    new_taks.put("id", String.valueOf(last_od + 1));
-                    new_taks.put("marked", "todo");
-                    new_taks.put("created", dateTime.format(formatter));
-                    new_taks.put("updated", "");
-                    list.add(new_taks);
+                    new_task.put("id", String.valueOf(last_od + 1));
+                    new_task.put("marked", "todo");
+                    new_task.put("created", dateTime.format(formatter));
+                    new_task.put("updated", "");
+                    list.add(new_task);
 
                     write(mapper, target.toFile(), list);
                     break;
@@ -118,7 +118,7 @@ public class Main {
                         String result;
                         if (has_filter) {
                             try {
-                                result = task.get("marked").equals(args[1]) ? task.get("description") + " " + task.get("marked").toString() : "\b";
+                                result = task.get("marked").equals(args[1]) ? String.format("%s. %s %s",task.get("id"),task.get("description"),task.get("marked").toString())   : "\b";
 
                             } catch (Exception e) {
                                 result = task.get("description").toString();
