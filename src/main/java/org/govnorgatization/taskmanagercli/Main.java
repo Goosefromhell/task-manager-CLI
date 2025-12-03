@@ -15,8 +15,7 @@ public class Main {
     public final Set<String> COMMANDS = Set.of("add", "delete-all", "update", "list", "delete", "--help", "mark", "mark <tags>", "tags:", "done", "in-progress", "todo");
 
     static void write(ObjectMapper mapper, File target, List<Map<String, Object>> list) {
-        mapper.writerWithDefaultPrettyPrinter()
-                .writeValue(target, list);
+        mapper.writerWithDefaultPrettyPrinter().writeValue(target, list);
 
 
     }
@@ -29,8 +28,7 @@ public class Main {
             return;
         }
 
-        Path target = Path.of(System.getProperty("user.home"),
-                "Buffers", "TaskManager", "test.json");
+        Path target = Path.of(System.getProperty("user.home"), "Buffers", "TaskManager", "test.json");
 
         try {
             Files.createDirectories(target.getParent());
@@ -80,7 +78,7 @@ public class Main {
                         if (list.get(i).get("id").toString().equals(args[1])) {
                             System.out.println(i);
                             list.get(i).replace("description", String.join(" ", Arrays.copyOfRange(args, 2, args.length)));
-                            list.get(i).replace("updated",dateTime.format(formatter));
+                            list.get(i).replace("updated", dateTime.format(formatter));
                             write(mapper, target.toFile(), list);
                             break;
                         }
@@ -90,7 +88,7 @@ public class Main {
 
                 case "mark":
                     if (args.length < 3 || !COMMANDS.contains(args[2])) {
-                        System.err.println("Ussssage: java ... Main <name> <description>");
+                        System.err.println("Usage: java ... Main <name> <description>");
                         break;
                     }
                     for (int i = 0; i < list.size(); i++) {
@@ -104,30 +102,36 @@ public class Main {
                 case "list":
                     if (args.length > 2) {
                         System.err.println("Usage: java ... Main <name> <description>");
+
                     }
                     boolean has_filter = false;
                     if (args.length > 1 && COMMANDS.contains(args[1])) {
 
                         has_filter = true;
 
-                    } else if (args.length > 1 && !COMMANDS.contains(args[2])) {
+                    } else if (args.length > 1 && !COMMANDS.contains(args[1])) {
                         System.err.println("Usage: java ... Main <name> <description>");
                         break;
                     }
+                    System.out.printf("%-4s %-35s %-12s %-20s %-20s%n", "ID", "DESCRIPTION", "STATUS", "CREATED", "UPDATED");
                     for (Map<String, Object> task : list) {
-                        String result;
+                        String title = task.get("description").toString();
+                        int length_of_title = title.length();
+                        String if_longer = title;
+                        title = title.length() > 30 ? title.substring(0, 30) : title;
                         if (has_filter) {
-                            try {
-                                result = task.get("marked").equals(args[1]) ? String.format("%s. %s %s",task.get("id"),task.get("description"),task.get("marked").toString())   : "\b";
-
-                            } catch (Exception e) {
-                                result = task.get("description").toString();
+                            if (task.get("marked").equals(args[1])) {
+                                System.out.printf("%-4s %-35s %-12s %-20s %-20s%n", task.get("id"), title, task.get("marked"), task.get("created"), task.get("updated"));
+                                if (length_of_title > 30) {
+                                    System.out.printf("     %s%n", if_longer.substring(30));
+                                }
                             }
                         } else {
-                            result = task.get("id") + "." + " " +task.get("description") + " " + task.get("marked").toString()+" "+ "Created: "+task.get("created")+" Updated: "+task.get("updated");
-
+                            System.out.printf("%-4s %-35s %-12s %-20s %-20s%n", task.get("id"), title, task.get("marked"), task.get("created"), task.get("updated"));
+                            if (length_of_title > 30) {
+                                System.out.printf("     %s%n", if_longer.substring(30));
+                            }
                         }
-                        System.out.println(result);
 
                     }
 
