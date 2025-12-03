@@ -144,12 +144,12 @@ public class Main {
                         if (COMMANDS.contains(args[1])) {
                             filtered = true;
                         }
-                        for (int i = list.size()-1; i>=0 ; i--) {
+                        for (int i = list.size() - 1; i >= 0; i--) {
 
                             if (filtered && list.get(i).get("marked").toString().equals(args[1])) {
                                 list.remove(i);
-                                write(mapper,target.toFile(),list);
-                            } else if(!filtered && list.get(i).get("id").toString().equals(args[1])) {
+                                write(mapper, target.toFile(), list);
+                            } else if (!filtered && list.get(i).get("id").toString().equals(args[1])) {
                                 list.remove(i);
                                 write(mapper, target.toFile(), list);
                                 break;
