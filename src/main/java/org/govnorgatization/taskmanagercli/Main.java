@@ -137,15 +137,23 @@ public class Main {
 
                     break;
                 case "delete": {
+                    boolean filtered = false;
                     if (args.length != 2) {
                         System.err.println("Usage: java ... Main <name> <description>");
-                    }
+                    } else {
+                        if (COMMANDS.contains(args[1])) {
+                            filtered = true;
+                        }
+                        for (int i = list.size()-1; i>=0 ; i--) {
 
-                    for (int i = 0; i < list.size(); i++) {
-                        if (list.get(i).get("id").toString().equals(args[1])) {
-                            list.remove(i);
-                            write(mapper, target.toFile(), list);
-                            break;
+                            if (filtered && list.get(i).get("marked").toString().equals(args[1])) {
+                                list.remove(i);
+                                write(mapper,target.toFile(),list);
+                            } else if(!filtered && list.get(i).get("id").toString().equals(args[1])) {
+                                list.remove(i);
+                                write(mapper, target.toFile(), list);
+                                break;
+                            }
                         }
                     }
                     break;
