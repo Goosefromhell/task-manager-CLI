@@ -1,4 +1,4 @@
-package org.govnorgatization.taskmanagercli;
+package org.govnorgatization.taskmcli;
 
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
